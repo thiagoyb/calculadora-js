@@ -62,23 +62,25 @@ class CalcController{
             if(this._typedText.length>3){
                 this.calc();
             }
-            else if(this._typedText.length<=3 && val=='='){
-                this.clearEntry();
-            }
 
             this.updateDisplay();
         }
         calc(){
-            let lastVal = this.clearEntry();
+            let lastVal = this._typedText.length>3 ? this.clearEntry() : '';
             if(lastVal=='%'){
-
+                let last2nd = this.clearEntry();
+                let percent  = eval(parseFloat(last2nd) * parseFloat(this._typedText[0]) /100);
+                this._typedText.push(percent);
             } else{
-                this._typedText = [ eval(this._typedText.join('').trim()) ];
-                if(lastVal!='='){
-                    this._typedText.push(lastVal);
+                if(this._typedText.length==3){
+                    this._typedText = [ eval(this._typedText.join('').trim()) ];
+                    if(lastVal!=''){
+                        this._typedText.push(lastVal);
+                    }
                 }
             }
-            
+            this.updateDisplay();
+            console.log(this._typedText);
         }
         
         addOperation(val){
@@ -87,13 +89,11 @@ class CalcController{
 
                 if(this.isOperator(this.getLast())){
                     this.clearEntry();
-                    this.pushOperation(val);//tratar se e %
-                } else{//e num ou .
-                    this.pushOperation(val);
-                }
+                }   //Se last eh operation remove acima e substitui abaixo, ou simpl. add new item
+                this.pushOperation(val);
             } else{
                 this.pushOperation(val);
-                //. = 
+                //.
             }
             console.log(this._typedText);
         }
@@ -159,7 +159,7 @@ class CalcController{
                     break;
                 }
                 case 'igual':{
-                    this.addOperation('=');
+                    this.calc();
                     break;
                 }
                 case 'ponto':{
