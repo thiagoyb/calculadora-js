@@ -31,6 +31,8 @@ class CalcController{
 
         clearAll(){
             this._typedText = [];
+            this._lastNumber = '';
+            this._lastOperator = '';
             this.updateDisplay();
             console.log(this._typedText);
         }
@@ -79,14 +81,14 @@ class CalcController{
             if(lastVal=='%'){
                 let last2nd = this.clearEntry();
                 let percent  = eval(parseFloat(last2nd) * parseFloat(this._typedText[0]) /100);
-                this._typedText.push(percent);
+                this._typedText.push(parseFloat(percent.toFixed(11)));
             } else{
                 if(this._typedText.length==3){
                     let result = eval(this._typedText.join('').trim());
                     this._lastOperator = lastVal!='' ? lastVal : this.getLastItem();
                     this._lastNumber = lastVal!='' ? result : this.getLastItem(false);
 
-                    this._typedText = [result];
+                    this._typedText = [parseFloat(result.toFixed(11))];
                     if(lastVal!=''){
                         this._typedText.push(lastVal);
                     }
@@ -101,20 +103,31 @@ class CalcController{
         }
         
         addOperation(val){
-            if(this.isOperator(val)){//se array vazio e poe operador, poe 0 antes
-                if(this._typedText.length==0){ this.addDigit(0); }
+            if(this._typedText.length==0){ this.addDigit(0); }
 
+            if(this.isOperator(val)){//se array vazio e poe operador, poe 0 antes
                 if(this.isOperator(this.getLast())){
                     this.clearEntry();
                 }   //Se last eh operation remove acima e substitui abaixo, ou simpl. add new item
                 this.pushOperation(val);
-            } else{
-                this.pushOperation(val);
-                //.
+            } else{//.
+                let lastVal = this.clearEntry();
+
+                if(this.isOperator(lastVal)){
+                    this._typedText.push(lastVal);
+                    this.pushOperation('0.');
+                } else{
+                    if(lastVal.toString().split('').indexOf('.')>-1){
+                        this._typedText.push(lastVal);
+                        return;
+                    }
+                    let newVal = lastVal.toString() + '.';
+                    this.pushOperation(newVal);
+                }
             }
             console.log(this._typedText);
         }
-        addDigit(val){//OK 04/12/21
+        addDigit(val){//OK 05/12/21
             let lastDigit = this.getLast();
             if(lastDigit!==''){
                 if(isNaN(lastDigit)){
@@ -122,7 +135,7 @@ class CalcController{
                 } else{     // se array so tem um 0 e digita um numero nao concatena com 0;
                     let newVal = lastDigit===0 ? val : lastDigit.toString() + '' + val.toString();
                     this.clearEntry();
-                    this.pushOperation(parseInt(newVal));
+                    this.pushOperation(newVal);//Para permitir 0 a esq. depois do . nao converter
                 }
             } else{
                 this.pushOperation(val);
@@ -205,6 +218,10 @@ class CalcController{
                    btn.style.cursor = 'pointer';
                 });
             });
+        }
+
+        stripZeros(val){
+            return parseFloat(val.replace(',','.')).toString().replace('.',',');
         }
 
         get displayTime(){
