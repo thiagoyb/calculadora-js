@@ -1,6 +1,8 @@
 class CalcController{
 
         constructor(){
+            this._lastOperator = '';
+            this._lastNumber = '';
             this._typedText = [];
             this._locale='pt-BR';
             this._dateEl = document.querySelector('#data');
@@ -47,6 +49,13 @@ class CalcController{
             }
         }
 
+        getLastItem(isOperator = true){
+            for(let i = this._typedText.length-1; i>=0; i--){
+                if(this.isOperator(this._typedText[i]) == isOperator){ return this._typedText[i]; }
+            }
+            return '';
+        }
+
         getLast(){
             return this._typedText.length>0 ? this._typedText[this._typedText.length-1] : '';
         }
@@ -65,7 +74,7 @@ class CalcController{
 
             this.updateDisplay();
         }
-        calc(){
+        calc(){//05/12/2021
             let lastVal = this._typedText.length>3 ? this.clearEntry() : '';
             if(lastVal=='%'){
                 let last2nd = this.clearEntry();
@@ -73,10 +82,18 @@ class CalcController{
                 this._typedText.push(percent);
             } else{
                 if(this._typedText.length==3){
-                    this._typedText = [ eval(this._typedText.join('').trim()) ];
+                    let result = eval(this._typedText.join('').trim());
+                    this._lastOperator = lastVal!='' ? lastVal : this.getLastItem();
+                    this._lastNumber = lastVal!='' ? result : this.getLastItem(false);
+
+                    this._typedText = [result];
                     if(lastVal!=''){
                         this._typedText.push(lastVal);
                     }
+                } else{
+                    let firstItem = this._typedText[0];
+                    this._typedText = [firstItem, this._lastOperator, this._lastNumber];
+                    this._typedText = [eval(this._typedText.join('').trim())];
                 }
             }
             this.updateDisplay();
