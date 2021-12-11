@@ -11,6 +11,7 @@ class CalcController{
             this._curDate;
             this.init();
             this.initButtonsEvents();
+            this.initKeyBoard();
         }
 
         init(){
@@ -201,6 +202,67 @@ class CalcController{
                     break;
                 }
             }
+        }
+
+        initKeyBoard(){
+            document.addEventListener('keyup', event =>{
+                switch(event.key){
+                    case '1':
+                    case '2':
+                    case '3':
+                    case '4':
+                    case '5':
+                    case '6':
+                    case '7':
+                    case '8':
+                    case '9':
+                    case '0':{
+                        this.addDigit(parseInt(event.key));
+                        break;
+                    }
+                    case 'Escape':{
+                        this.clearAll();
+                        break;
+                    }
+                    case 'Backspace':{
+                        this.clearEntry()
+                        this.updateDisplay();
+                        console.log(this._typedText);
+                        break;
+                    }
+                    case '+':{
+                        this.addOperation('+');
+                        break;
+                    }
+                    case '-':{
+                        this.addOperation('-');
+                        break;
+                    }
+                    case '*':{
+                        this.addOperation('*');
+                        break;
+                    }
+                    case '/':{
+                        this.addOperation('/');
+                        break;
+                    }
+                    case '%':{
+                        this.addOperation('%');
+                        break;
+                    }
+                    case '=':
+                    case 'Enter':{
+                        this.calc();
+                        break;
+                    }
+                    case '.':
+                    case ',':{
+                        this.addOperation('.');
+                        break;
+                    }
+                    default:{ console.log('Key: ', event.key); }
+                }
+            });
         }
 
         initButtonsEvents(){
