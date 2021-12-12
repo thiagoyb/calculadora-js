@@ -121,14 +121,14 @@ class CalcController{
             if(lastVal=='%'){
                 let last2nd = this.clearEntry();
                 let percent  = eval(parseFloat(last2nd) * parseFloat(this._typedText[0]) /100);
-                this._typedText.push(parseFloat(percent.toFixed(11)));
+                this._typedText.push(parseFloat(percent.toFixed(8)));
             } else{
                 if(this._typedText.length==3){
                     let result = eval(this._typedText.join('').trim());
                     this._lastOperator = lastVal!='' ? lastVal : this.getLastItem();
                     this._lastNumber = lastVal!='' ? result : this.getLastItem(false);
 
-                    this._typedText = [parseFloat(result.toFixed(11))];
+                    this._typedText = [parseFloat(result.toFixed(8))];
                     if(lastVal!=''){
                         this._typedText.push(lastVal);
                     }
@@ -349,6 +349,11 @@ class CalcController{
             return this._displayEl.innerHTML;
         }
         set displayCalc(val){
+            if(val.toString().length>11){
+                //this.setError();
+                //return;
+            }
+
             this._displayEl.innerHTML = val;
         }
 
