@@ -1,6 +1,8 @@
 class CalcController{
 
         constructor(){
+            this._audioOn = false;
+            this._audio = new Audio('click.mp3');
             this._lastOperator = '';
             this._lastNumber = '';
             this._typedText = [];
@@ -40,6 +42,25 @@ class CalcController{
             }, 1000);
 
             this.pasteFromClipboard();
+
+            document.querySelectorAll('#logo-hcode').forEach(btn=>{
+                this.addEvents(btn,'click dblclick', event=>{
+                    this.toggleAudio();
+                });
+            });
+        }
+
+        toggleAudio(){
+            this._audioOn = !this._audioOn;
+            this.playAudio();
+            console.log('Audio '+(this._audioOn ? 'ligado' : 'desligado.'));
+        }
+
+        playAudio(){
+            if(this._audioOn){
+                this._audio.currentTime = 0;
+                this._audio.play();
+            }
         }
 
         addEvents(element, events, fn){
@@ -163,6 +184,7 @@ class CalcController{
         }
 
         execBtn(val){
+            this.playAudio();
             switch(val){
                 case '1':
                 case '2':
@@ -224,6 +246,7 @@ class CalcController{
 
         initKeyBoard(){
             document.addEventListener('keyup', event =>{
+                this.playAudio();
                 switch(event.key){
                     case '1':
                     case '2':
