@@ -14,6 +14,23 @@ class CalcController{
             this.initKeyBoard();
         }
 
+        pasteFromClipboard(){
+            document.addEventListener('paste', event=>{
+                let pasteText = event.clipboardData.getData('Text');
+                this.addDigit(parseFloat(pasteText.replace(',','.')));
+            });
+        }
+
+        copyToClipboard(){
+            let input = document.createElement("INPUT");
+            input.value = this._typedText;
+            document.body.appendChild(input);
+            input.focus();
+            input.select();
+            document.execCommand("Copy");
+            input.remove();
+        }
+
         init(){
             this.updateDisplay();
 
@@ -22,6 +39,7 @@ class CalcController{
                 this.setDisplayDateTime();
             }, 1000);
 
+            this.pasteFromClipboard();
         }
 
         addEvents(element, events, fn){
@@ -258,6 +276,10 @@ class CalcController{
                     case '.':
                     case ',':{
                         this.addOperation('.');
+                        break;
+                    }
+                    case 'c':{
+                        if(event.ctrlKey) this.copyToClipboard();
                         break;
                     }
                     default:{ console.log('Key: ', event.key); }
